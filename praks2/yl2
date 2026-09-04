@@ -1,0 +1,10 @@
+#!/bin/bash
+# Скрипт выводит текущую дату, время и календарь на текущий месяц
+
+echo "=== Tekuštsee vremja i data ==="
+date
+
+echo ""
+echo "=== Kalendar na tekustsij mesjats ==="
+cal
+
