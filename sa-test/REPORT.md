@@ -1,10 +1,6 @@
 # Arvestustöö raport
 
-Nimi: Nikita Tšerni  
-Variant: A  
-Kuupäev: 2026-10-09  
 
-Kirjelda vähemalt **6 leitud probleemi**.
 
 ## Probleem 1
 - Skript: `scripts/system_info.sh`
