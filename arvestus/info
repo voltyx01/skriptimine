@@ -1,0 +1,11 @@
+#!/bin/bash
+# Autor: Nikita Tserni
+# Skripti nimi: info
+# Kirjeldus: Skript tervitab sisselogitud kasutajat ning väljastab praeguse kuupäeva ja kellaaja.
+
+# b. Tervitame kasutajat
+echo "Tere, $(whoami)!"
+
+# c. Väljastame kuupäeva ja kellaaja
+KUUPAEV_KELL=$(date +"%d.%m.%Y kell %k:%M" | tr -s ' ')
+echo "Täna on $KUUPAEV_KELL"
