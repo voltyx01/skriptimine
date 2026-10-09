@@ -70,20 +70,22 @@
 ## Probleem 4
 - Skript: `scripts/service_check.sh`
 - Mida skript näiliselt tegi: Kontrollis, kas etteantud teenus töötab süsteemis.
-- Mis oli tegelikult vale: `systemctl list-unit-files --type=service` kontrollib ainult seda, kas teenuse unit-fail on kettal olemas (paigaldatud), mitte seda, kas teenus hetkel aktiivselt töötab. Seiskunud või passiivne teenus (näiteks `apt-daily.service`) raporteeriti ekslikult töötavaks. Lisaks puudus tühja argumendi kontroll.
-- Kuidas vea avastasin: Käivitasin skripti passiivse teenusega `apt-daily`, mis ei tööta (`systemctl is-active` annab `inactive`), kuid skript teatas `"Teenus apt-daily töötab."`.
+- Mis oli tegelikult vale: `systemctl list-unit-files --type=service` kontrollib ainult seda, kas teenuse unit-fail on kettal olemas (paigaldatud), mitte seda, kas teenus hetkel aktiivselt töötab. Seiskunud või passiivne teenus (näiteks `apt-daily.service`) raporteeriti ekslikult töötavaks. Lisaks puudus tühja argumendi kontroll ning olematu ja paigaldamata teenuse selge eristamine.
+- Kuidas vea avastasin: Käivitasin skripti passiivse teenusega `apt-daily`, mis ei tööta (`systemctl is-active` annab `inactive`), kuid skript teatas `"Teenus apt-daily töötab."`. Samuti kontrollisin käitumist täiesti olematu teenusega.
 - Millise käsuga kontrollisin:
   ```bash
   systemctl is-active apt-daily
   bash scripts/service_check.sh apt-daily
   echo $?
+  bash scripts/service_check.sh olematu_teenus
+  echo $?
   ```
-- Parandus: Lisasin tühja argumendi kontrolli (exit code 2). Asendasin unit-failide otsingu käsuga `systemctl is-active --quiet "$service"`.
+- Parandus: Lisasin tühja argumendi kontrolli (exit code 2). Lisasin eelneva kontrolli, kas teenus on üldse süsteemi paigaldatud (`systemctl cat` ja unit-failide kontroll); kui teenust pole paigaldatud, antakse teade "Teenust ... ei leitud (pole paigaldatud)." ja väljutakse koodiga 1. Teenuse jooksmise tuvastamiseks kasutatakse käsku `systemctl is-active --quiet "$service"`.
 - Kuidas kontrollisin pärast parandust:
   ```bash
   bash scripts/service_check.sh cron               # Töötav teenus: väljastab "Teenus cron töötab." (exit 0)
   bash scripts/service_check.sh apt-daily          # Mitteaktiivne teenus: väljastab "Teenus apt-daily ei tööta." (exit 1)
-  bash scripts/service_check.sh olematu_teenus     # Olematu teenus: väljastab "Teenus olematu_teenus ei tööta." (exit 1)
+  bash scripts/service_check.sh olematu_teenus     # Paigaldamata teenus: väljastab "Teenust olematu_teenus ei leitud (pole paigaldatud)." (exit 1)
   bash scripts/service_check.sh ""                 # Tühi sisend: väljastab veateate (exit 2)
   ```
 - Vajadusel exit code enne / pärast:
@@ -116,7 +118,7 @@
 
 ## Probleem 6
 - Skript: `scripts/backup.sh` ja `lib/common.sh`
-- Mida skript näiliselt tegi: Pidi tagama failide (sh tühikutega nimedega failide nagu `important data.txt`) säilimise ning toetama logimist.
+- Mida skript näiliselt tegi: Pidi tagama failide (sh tühikuid sisaldavate failide nagu `important data.txt`) säilimise ning toetama logimist.
 - Mis oli tegelikult vale:
   1. Failide tegelik sisu ja kataloogistruktuur (nt `testdata/source/subdir/nested.txt`) ei jõudnud varukoopiasse.
   2. Kuigi projektis oli defineeritud logimisfunktsioon `log_message` failis `lib/common.sh` ja konfiguratsioon `LOG_FILE` failis `config/settings.conf`, ei kasutanud `backup.sh` (ega teised skriptid) seda funktsiooni ning faili `logs/toolkit.log` ei kirjutatud ühtegi kirjet.
@@ -131,7 +133,7 @@
 - Kuidas kontrollisin pärast parandust: Käivitasin `setup.sh`, seejärel `scripts/backup.sh`, vaatasin arhiivi sisu (`tar -tzvf`, kus `important data.txt` oli olemas) ning kontrollisin, et `cat logs/toolkit.log` sisaldab ajatempliga logikannet.
 
 ## Uus funktsionaalsus
-- Mida lisasin: Lõin varukoopia taastamise skripti `scripts/restore.sh` ja lisasin selle peamenüüsse `main.sh` (valik 6: "Varukoopia taastamine"). Skript võimaldab taastada kas viimati loodud varukoopia või etteantud arhiivifaili sihtkausta (`testdata/restore`), valideerib arhiivi terviklikkuse enne lahtipakkimist (`tar -tzf`) ning logib tulemuse faili `logs/toolkit.log`.
+- Mida lisasin: Lõin varukoopia taastamise skripti `scripts/restore.sh` ja lisasin selle peamenüüsse `main.sh` (valik 6: "Varukoopia taastamine"). Skript võimaldab taastada kas viimati loodud või etteantud arhiivifaili sihtkausta (`testdata/restore`), valideerib arhiivi terviklikkuse enne lahtipakkimist (`tar -tzf`) ning logib tulemuse faili `logs/toolkit.log`.
 - Kuidas käivitada:
   - Menüüst: käivita `bash main.sh` ja vali `6`
   - Käsitsi viimase koopia taastamine: `bash scripts/restore.sh`

@@ -12,7 +12,16 @@ if [ -z "$service" ]; then
     exit 2
 fi
 
-# Kontrollime, kas teenus hetkel aktiivselt töötab (mitte ainult kas fail eksisteerib)
+# Kontrollime, kas teenus on üldse süsteemi paigaldatud / eksisteerib
+if ! systemctl cat "$service" &>/dev/null && ! systemctl list-unit-files "${service%.service}.service" 2>/dev/null | awk '{print $1}' | grep -qx "${service%.service}.service"; then
+    echo "Teenust $service ei leitud (pole paigaldatud)."
+    if type log_message &>/dev/null; then
+        log_message "Teenuse kontroll: $service ei leitud (pole paigaldatud)"
+    fi
+    exit 1
+fi
+
+# Kontrollime, kas teenus hetkel aktiivselt töötab
 if systemctl is-active --quiet "$service"; then
     echo "Teenus $service töötab."
     if type log_message &>/dev/null; then
