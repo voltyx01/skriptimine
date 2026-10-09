@@ -1,45 +1,44 @@
-# GitHowTo - Praktiline Giti õppeprojekt
+# GitHowTo - Practical Git Learning Project
 
-## Projekti kirjeldus
-Selle projekti eesmärk oli läbida **GitHowTo** praktilised harjutused ning õppida versioonihaldussüsteemi **Git** põhitõdesid ja igapäevast töövoogu. Projekti käigus loodi kohalik repositoorium, teostati muudatusi, hallati harusid ning ühendati need GitHubi kaughoidlaga.
-
----
-
-## Mida ma selle projekti käigus õppisin?
-
-Õppisin kasutusse võtma põhilisi Giti käske, mõistma failide staatuseid (untracked, staged, committed) ning lahendama lihtsamaid harude ühendamise töövõtteid.
-
-### Õpitud teemad:
-* Repositooriumi algatamine ja failide jälgimine
-* Muudatusete salvestamine (commit) ja ajaloo vaatamine
-* Harude (branches) loomine, vahetamine ja liitmine (merge)
-* Kaughoidla (GitHub) ühendamine ja andmete edastamine (push/pull)
+## Project Description
+The objective of this project was to complete the **GitHowTo** practical exercises and master the fundamentals of the **Git** version control system and its standard workflow. During this project, a local repository was initialized, changes were tracked, branches were managed, and the repository was synchronized with GitHub.
 
 ---
 
-## Põhilised Git käsud
+## What I Learned
+Through this project, I gained hands-on experience with core Git commands, learned to manage file states (*untracked, staged, committed*), and practiced fundamental branching and merging workflows.
 
-Igapäevases töövoos kasutati järgmisi käske:
+### Topics Covered:
+* Initializing repositories and tracking files
+* Saving changes via commits and inspecting history
+* Creating, switching, and merging branches
+* Connecting local repositories to remote hosts (GitHub) and using `push`/`pull` operations
 
-* `git status` — kontrollib failide hetkeseisu hoidlas.
-* `git add` — lisab muudatused indeksisse (*staging area*).
-* `git commit` — salvestab indeksis olevad muudatused ajaloosse.
-* `git log` — kuvab sooritatud commit-ide ajaloo.
-* `git branch` — kuvab või loob uusi harusid.
-* `git switch` — vahetab aktiivset haru (või `git checkout`).
-* `git merge` — liidab valitud haru muudatused aktiivse haruga.
+---
 
-### Näide tüüpilisest Git töövoost:
+## Essential Git Commands
+
+The primary commands utilized throughout the workflow include:
+
+* `git status` — Checks the current state of files in the working directory and staging area.
+* `git add` — Adds changes to the staging area.
+* `git commit` — Saves staged changes to the repository history with a descriptive message.
+* `git log` — Displays the commit history log.
+* `git branch` — Lists, creates, or deletes branches.
+* `git switch` — Switches to a specified branch (alternative to `git checkout`).
+* `git merge` — Merges specified branch history into the currently active branch.
+
+### Example Standard Git Workflow:
 
 ```bash
-# 1. Kontrolli failide olekut
+# 1. Check current repository status
 git status
 
-# 2. Lisa muudetud failid staging alale
+# 2. Stage updated files
 git add .
 
-# 3. Tee commit koos selgitava teatega
-git commit -m "Täiendatud README.md faili"
+# 3. Commit staged changes with a descriptive message
+git commit -m "Updated README.md documentation"
 
-# 4. Saada muudatused GitHubi
+# 4. Push local changes to the remote GitHub repository
 git push origin main

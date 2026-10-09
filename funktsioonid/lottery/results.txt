@@ -1,0 +1,85 @@
+========================================
+Date: Tue Sep 29 12:42:16 PM EEST 2026
+Player: Margus
+Player numbers:
+4
+3
+2
+1
+9
+Lottery numbers:
+47
+10
+27
+28
+45
+Matches: 0
+Result: Seekord tabamusi ei olnud.
+========================================
+Date: Tue Sep 29 12:42:38 PM EEST 2026
+Player: Morten
+Player numbers:
+47
+25
+1
+10
+7
+Lottery numbers:
+12
+17
+37
+29
+41
+Matches: 0
+Result: Seekord tabamusi ei olnud.
+========================================
+Date: Tue Sep 29 12:43:03 PM EEST 2026
+Player: Morten2
+Player numbers:
+10
+15
+27
+1
+26
+Lottery numbers:
+34
+38
+15
+23
+8
+Matches: 1
+Result: Üks tabamus.
+========================================
+Date: Tue Sep 29 12:55:17 PM EEST 2026
+Player: hmmmm
+Player numbers:
+5
+3
+1
+18
+14
+Lottery numbers:
+2
+50
+40
+38
+7
+Matches: 0
+Result: Seekord tabamusi ei olnud.
+========================================
+Date: Tue Sep 29 01:02:11 PM EEST 2026
+Player: hmmmmmm3
+Player numbers:
+5
+3
+17
+50
+30
+Lottery numbers:
+22
+24
+9
+47
+8
+Matches: 0
+Result: Seekord tabamusi ei olnud.
