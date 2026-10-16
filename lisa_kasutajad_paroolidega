@@ -1,0 +1,76 @@
+#!/bin/bash
+# Ülesanne 4 - kasutajad ja paroolid on eraldatud
+# Kasutamine: ./lisa_kasutajad_paroolidega <kasutajate_fail> <paroolide_fail>
+
+if [ $# -ne 2 ]; then
+    echo "Kasutamine: $0 <kasutajate_fail> <paroolide_fail>"
+    exit 1
+fi
+
+kasutajate_fail="$1"
+paroolide_fail="$2"
+
+if [ ! -f "$kasutajate_fail" ]; then
+    echo "Kasutajate faili $kasutajate_fail ei leitud!"
+    exit 1
+fi
+
+if [ ! -f "$paroolide_fail" ]; then
+    echo "Paroolide faili $paroolide_fail ei leitud!"
+    exit 1
+fi
+
+# Loeme mõlemad failid rida-realt paralleelselt kahe failideskriptori abil (FD 3 ja FD 4)
+exec 3< "$kasutajate_fail"
+exec 4< "$paroolide_fail"
+
+while true; do
+    read -r kasutajanimi <&3
+    read -r parool <&4
+
+    # Kui mõlemad failid on lõppenud
+    if [ -z "$kasutajanimi" ] && [ -z "$parool" ]; then
+        break
+    fi
+
+    # Puhastame sümbolid
+    kasutajanimi="$(echo "$kasutajanimi" | tr -d '\r' | xargs)"
+    parool="$(echo "$parool" | tr -d '\r' | xargs)"
+
+    # Kontrollime, et kasutajanimi pole tühi
+    if [ -z "$kasutajanimi" ]; then
+        continue
+    fi
+
+    echo "Töödeldakse kasutajat: $kasutajanimi"
+
+    # Kontrollime, kas kasutaja juba eksisteerib süsteemis
+    if id "$kasutajanimi" &>/dev/null; then
+        echo "Kasutaja $kasutajanimi on juba olemas, kasutajat uuesti ei looda."
+    else
+        # Loome kasutaja koos kodukataloogiga ja /etc/skel struktuuriga
+        useradd -m -s /bin/bash "$kasutajanimi"
+        if [ $? -eq 0 ]; then
+            echo "Kasutaja $kasutajanimi loodud."
+        else
+            echo "Kasutaja $kasutajanimi loomine ebaõnnestus."
+            continue
+        fi
+    fi
+
+    # Määrame parooli
+    if [ -n "$parool" ]; then
+        echo "$kasutajanimi:$parool" | chpasswd
+        if [ $? -eq 0 ]; then
+            echo "Kasutajale $kasutajanimi parool edukalt määratud."
+        else
+            echo "Kasutajale $kasutajanimi parooli määramine ebaõnnestus."
+        fi
+    else
+        echo "Hoiatus: kasutajale $kasutajanimi parooli ei leitud."
+    fi
+done
+
+# Sulgeme failideskriptorid
+exec 3<&-
+exec 4<&-
