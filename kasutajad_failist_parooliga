@@ -1,0 +1,42 @@
+#!/bin/bash
+# Ülesanne 3 - kasutajad paroolidega failist
+# Kasutamine: ./kasutajad_failist_parooliga <failinimi>
+
+if [ $# -ne 1 ]; then
+    echo "Kasutamine: $0 <failinimi>"
+    exit 1
+fi
+
+fail="$1"
+
+if [ ! -f "$fail" ]; then
+    echo "Faili $fail ei leitud!"
+    exit 1
+fi
+
+SKRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+while IFS=: read -r kasutajanimi parool || [ -n "$kasutajanimi" ]; do
+    # Eemaldame võimalikud tühikud ja reavahetused
+    kasutajanimi="$(echo "$kasutajanimi" | tr -d '\r' | xargs)"
+    parool="$(echo "$parool" | tr -d '\r' | xargs)"
+    
+    # Jätame tühjad read vahele
+    if [ -z "$kasutajanimi" ]; then
+        continue
+    fi
+
+    # Loome kasutaja, kasutades eelmist skripti lisa_kasutaja
+    echo "Lisatakse kasutaja: $kasutajanimi"
+    "$SKRIPT_DIR/lisa_kasutaja" "$kasutajanimi"
+    
+    # Määrame parooli, kui see on antud
+    if [ -n "$parool" ]; then
+        echo "$kasutajanimi:$parool" | chpasswd
+        if [ $? -eq 0 ]; then
+            echo "Kasutajale $kasutajanimi parool edukalt määratud."
+        else
+            echo "Kasutajale $kasutajanimi parooli määramine ebaõnnestus."
+        fi
+    fi
+done < "$fail"
