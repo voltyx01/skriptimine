@@ -1,0 +1,30 @@
+#!/bin/bash
+# Ülesanne 2 - kasutajad failist
+# Kasutamine: ./kasutajad_failist <failinimi>
+
+if [ $# -ne 1 ]; then
+    echo "Kasutamine: $0 <failinimi>"
+    exit 1
+fi
+
+fail="$1"
+
+if [ ! -f "$fail" ]; then
+    echo "Faili $fail ei leitud!"
+    exit 1
+fi
+
+SKRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+while IFS= read -r rida || [ -n "$rida" ]; do
+    # Eemaldame tühikud ja reavahetused
+    kasutajanimi="$(echo "$rida" | tr -d '\r' | xargs)"
+    
+    # Jätame tühjad read vahele
+    if [ -z "$kasutajanimi" ]; then
+        continue
+    fi
+
+    echo "Lisatakse kasutaja: $kasutajanimi"
+    "$SKRIPT_DIR/lisa_kasutaja" "$kasutajanimi"
+done < "$fail"
