@@ -1,0 +1,65 @@
+#!/bin/bash
+# Ülesanne 5 - paroolide genereerimine ja logimine
+# Kasutamine: ./lisa_kasutajad_genereeri_parool <kasutajate_fail>
+
+if [ $# -ne 1 ]; then
+    echo "Kasutamine: $0 <kasutajate_fail>"
+    exit 1
+fi
+
+fail="$1"
+
+if [ ! -f "$fail" ]; then
+    echo "Faili $fail ei leitud!"
+    exit 1
+fi
+
+LOGIFAIL="loodud_kasutajad_paroolidega"
+
+# Funktsioon parooli genereerimiseks (8 tähemärki, ainult tähed)
+genereeri_parool() {
+    if which pwgen &>/dev/null; then
+        pwgen 8 1 -A -0
+    elif which openssl &>/dev/null; then
+        openssl rand -base64 12 | tr -dc 'a-zA-Z' | head -c 8
+    else
+        tr -dc 'a-zA-Z' < /dev/urandom | head -c 8
+    fi
+}
+
+while IFS= read -r rida || [ -n "$rida" ]; do
+    kasutajanimi="$(echo "$rida" | tr -d '\r' | xargs)"
+
+    if [ -z "$kasutajanimi" ]; then
+        continue
+    fi
+
+    echo "Töödeldakse kasutajat: $kasutajanimi"
+
+    # Kontrollime, kas kasutaja juba eksisteerib
+    if id "$kasutajanimi" &>/dev/null; then
+        echo "Kasutaja $kasutajanimi on juba olemas, kasutajat uuesti ei looda."
+    else
+        # Loome kasutaja koos kodukataloogi ja /etc/skel struktuuriga
+        useradd -m -s /bin/bash "$kasutajanimi"
+        if [ $? -eq 0 ]; then
+            echo "Kasutaja $kasutajanimi loodud."
+        else
+            echo "Kasutaja $kasutajanimi loomine ebaõnnestus."
+            continue
+        fi
+    fi
+
+    # Genereerime 8-kohalise parooli
+    parool=$(genereeri_parool)
+
+    # Määrame parooli
+    echo "$kasutajanimi:$parool" | chpasswd
+    if [ $? -eq 0 ]; then
+        echo "Kasutajale $kasutajanimi parool edukalt määratud."
+        # Salvestame logifaili kujul kasutaja:parool
+        echo "$kasutajanimi:$parool" >> "$LOGIFAIL"
+    else
+        echo "Kasutajale $kasutajanimi parooli määramine ebaõnnestus."
+    fi
+done < "$fail"
